@@ -1,0 +1,11 @@
+# Compiler artifacts (regenerated on compile)
+artifacts/
+
+# Remix VM state (regenerated each session)
+.states/
+
+# OS junk
+.DS_Store
+
+# Editor
+*.swp
