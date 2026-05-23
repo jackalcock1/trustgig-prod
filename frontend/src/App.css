@@ -134,3 +134,283 @@
   border: 1px solid #cfc;
   margin-top: 10px;
 }
+
+.tab-bar {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e6ee;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  padding: 10px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab:hover {
+  color: #1a4d80;
+}
+
+.tab-active {
+  color: #1a4d80;
+  border-bottom-color: #1a4d80;
+  font-weight: 600;
+}
+
+.jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.job-card {
+  background: #f7f9fc;
+  border: 1px solid #e0e6ee;
+  border-radius: 6px;
+  padding: 15px;
+}
+
+.job-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.job-card-header h3 {
+  margin: 0;
+  color: #1a4d80;
+}
+
+.status-badge {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.job-description {
+  margin: 10px 0;
+  font-style: italic;
+}
+
+.job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 13px;
+  color: #555;
+  margin: 10px 0 15px 0;
+}
+
+.review-form-overlay {
+  background: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.review-form {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.review-form h3 {
+  margin-top: 0;
+  color: #1a4d80;
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.cancel-button {
+  background: #888;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background: #666;
+}
+
+.cancel-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.browse-jobs-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.create-job-panel {
+  background: #f0f6ff;
+  border-color: #c5dbf5;
+}
+
+.create-job-panel textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.profile-display {
+  margin-top: 20px;
+  border-top: 2px solid #e0e6ee;
+  padding-top: 20px;
+}
+
+.profile-header h3 {
+  margin: 0;
+  color: #1a4d80;
+  font-size: 24px;
+}
+
+.profile-address {
+  margin: 5px 0 20px 0;
+  font-family: monospace;
+  font-size: 13px;
+  color: #666;
+  word-break: break-all;
+}
+
+.profile-summary {
+  display: flex;
+  gap: 30px;
+  background: #f7f9fc;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.profile-stat {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1a4d80;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.profile-section {
+  margin-bottom: 20px;
+}
+
+.profile-section h4 {
+  margin: 0 0 10px 0;
+  color: #444;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tag {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.endorsements-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.endorsements-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-card {
+  background: #fafbfc;
+  border: 1px solid #e0e6ee;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.review-rating {
+  color: #f5a623;
+  font-size: 16px;
+}
+
+.review-meta {
+  font-size: 12px;
+  color: #888;
+}
+
+.review-comment {
+  margin: 0;
+  font-style: italic;
+  color: #444;
+}

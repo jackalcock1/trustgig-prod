@@ -4,8 +4,20 @@
 
 import { useState, useEffect } from "react";
 import { useWallet } from "./hooks/useWallet";
-import { getContracts, getRoleLabel, ROLE_NONE } from "./contracts";
+import {
+  getContracts,
+  getRoleLabel,
+  ROLE_NONE,
+  ROLE_FREELANCER,
+  ROLE_CLIENT,
+  ROLE_VERIFIER,
+} from "./contracts";
+
 import RegistrationPanel from "./components/RegistrationPanel";
+import BrowseJobsView from "./components/BrowseJobsView";
+import MyJobsView from "./components/MyJobsView";
+import EndorseSkillPanel from "./components/EndorseSkillPanel";
+import ReputationLookup from "./components/ReputationLookup";
 
 import "./App.css";
 
@@ -13,17 +25,31 @@ function App() {
   // Get all the wallet stuff from our custom hook
   const wallet = useWallet();
 
-  // The role of the currently connected account (number from the enum in Registry.sol)
-  // null while we haven't checked yet, or while waiting for the result
+  // The role of the currently connected account
   const [currentRole, setCurrentRole] = useState(null);
 
   // Loading flag for the initial role check
   const [isCheckingRole, setIsCheckingRole] = useState(false);
 
-  // Whenever the user's account changes, we need to look up what role they have
-  // by calling Registry.getRole(theirAddress).
+  // A counter we bump whenever we want child components to re-fetch their data.
+  // Components that need to refresh after a transaction take this as a prop
+  // and use it in their useEffect dependency arrays.
+  const [refreshCounter, setRefreshCounter] = useState(0);
+
+  // Which tab is currently active in the main view.
+  // We're using a simple string state instead of react-router because the
+  // app is small enough that we don't need real routing.
+  const [activeTab, setActiveTab] = useState("browse");
+
+  // Function we can pass down to child components so they can trigger a
+  // global refresh after they do a transaction
+  function triggerRefresh() {
+    setRefreshCounter(refreshCounter + 1);
+  }
+
+  // Whenever the user's account changes (or we manually trigger a refresh),
+  // re-look up their role
   useEffect(() => {
-    // If they haven't connected, or they're on the wrong network, skip the check
     if (wallet.account === null || wallet.signer === null) {
       setCurrentRole(null);
       return;
@@ -34,17 +60,12 @@ function App() {
       return;
     }
 
-    // We use an async function inside useEffect because useEffect itself
-    // can't be async directly (React quirk)
     async function fetchRole() {
       setIsCheckingRole(true);
 
       try {
         const contracts = getContracts(wallet.signer);
         const roleNumber = await contracts.registry.getRole(wallet.account);
-
-        // The contract returns a BigInt, we convert to a regular Number
-        // since we know roles are small integers
         const roleAsNumber = Number(roleNumber);
         setCurrentRole(roleAsNumber);
       } catch (err) {
@@ -56,7 +77,82 @@ function App() {
     }
 
     fetchRole();
-  }, [wallet.account, wallet.signer, wallet.isCorrectNetwork]);
+  }, [wallet.account, wallet.signer, wallet.isCorrectNetwork, refreshCounter]);
+
+  // ----- Render helpers -----
+
+  // Decide which tabs to show based on the connected user's role.
+  // Everyone gets "browse" and "lookup", but role-specific tabs only appear
+  // for users with that role.
+  function renderTabs() {
+    const tabs = [];
+
+    tabs.push({ id: "browse", label: "Browse Jobs" });
+
+    if (currentRole === ROLE_FREELANCER || currentRole === ROLE_CLIENT) {
+      tabs.push({ id: "myjobs", label: "My Jobs" });
+    }
+
+    if (currentRole === ROLE_VERIFIER) {
+      tabs.push({ id: "endorse", label: "Endorse Skills" });
+    }
+
+    tabs.push({ id: "lookup", label: "Look Up Reputation" });
+
+    return (
+      <div className="tab-bar">
+        {tabs.map(function (tab) {
+          return (
+            <button
+              key={tab.id}
+              onClick={function () {
+                setActiveTab(tab.id);
+              }}
+              className={activeTab === tab.id ? "tab tab-active" : "tab"}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Decide which main view to show based on the active tab
+  function renderActiveView() {
+    if (activeTab === "browse") {
+      return (
+        <BrowseJobsView
+          signer={wallet.signer}
+          account={wallet.account}
+          currentRole={currentRole}
+          refreshCounter={refreshCounter}
+          onActionComplete={triggerRefresh}
+        />
+      );
+    } else if (activeTab === "myjobs") {
+      return (
+        <MyJobsView
+          signer={wallet.signer}
+          account={wallet.account}
+          currentRole={currentRole}
+          refreshCounter={refreshCounter}
+          onActionComplete={triggerRefresh}
+        />
+      );
+    } else if (activeTab === "endorse") {
+      return (
+        <EndorseSkillPanel
+          signer={wallet.signer}
+          onActionComplete={triggerRefresh}
+        />
+      );
+    } else if (activeTab === "lookup") {
+      return <ReputationLookup signer={wallet.signer} />;
+    }
+
+    return null;
+  }
 
   // ----- Render -----
 
@@ -120,39 +216,24 @@ function App() {
           </div>
         )}
 
-        {wallet.account !== null && wallet.isCorrectNetwork === true && (
-          <div className="role-sections">
-            {/* If they aren't registered yet, show the registration panel */}
-              {currentRole === ROLE_NONE && (
-                <RegistrationPanel
-                  signer={wallet.signer}
-                  onRegistrationSuccess={function () {
-                    // After successful registration, re-fetch the role.
-                    // We do this by just resetting the state - the useEffect that watches
-                    // wallet.account will pick it up.
-                    setCurrentRole(null);
-                    // Touch the state so the effect re-runs - bit of a hack but it works
-                    // TODO: clean this up later
-                    setTimeout(function () {
-                      // Force re-fetch by faking an account change
-                      if (wallet.account !== null && wallet.signer !== null) {
-                        // Re-trigger the role fetch
-                        window.location.reload();
-                      }
-                    }, 1000);
-                  }}
-                />
-              )}
+        {wallet.account !== null &&
+          wallet.isCorrectNetwork === true &&
+          currentRole === ROLE_NONE && (
+            <RegistrationPanel
+              signer={wallet.signer}
+              onRegistrationSuccess={triggerRefresh}
+            />
+          )}
 
-            {/* If they're already registered, we'll show role-specific actions */}
-            {currentRole !== null && currentRole !== ROLE_NONE && (
-              <div className="panel">
-                <h2>Welcome back, {getRoleLabel(currentRole)}</h2>
-                <p><em>(Role-specific actions coming next)</em></p>
-              </div>
-            )}
-          </div>
-        )}
+        {wallet.account !== null &&
+          wallet.isCorrectNetwork === true &&
+          currentRole !== null &&
+          currentRole !== ROLE_NONE && (
+            <>
+              {renderTabs()}
+              {renderActiveView()}
+            </>
+          )}
       </main>
     </div>
   );
