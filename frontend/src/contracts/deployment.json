@@ -1,0 +1,10 @@
+{
+  "network": "ganache",
+  "chainId": 1337,
+  "addresses": {
+    "Registry": "0x97C1418073Cfe94D0e6F433DB74A25C3C3334949",
+    "Job": "0x5e2c20e8db56e1546290D4C9d45683aE1Faab9bf",
+    "Reputation": "0xE4bfc4e43A5A890CAB0f29431a40ac76c7Ed610e"
+  },
+  "deployedAt": "2026-05-23T13:31:04.442Z"
+}
