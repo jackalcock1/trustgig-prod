@@ -12,6 +12,8 @@ module.exports = {
     ganache: {
       url: "http://127.0.0.1:7545",
       chainId: 1337,
+      // No explicit accounts here - Hardhat will use the default eth_accounts
+      // returned by Ganache, which are the 10 pre-funded accounts.
     },
   },
 };
