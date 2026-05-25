@@ -2,9 +2,9 @@
   "network": "ganache",
   "chainId": 1337,
   "addresses": {
-    "Registry": "0xc6FC1Be7cD6223965E464Efa02B4199097c34FFC",
-    "Job": "0x12257542692e2dd5a0eE13508aB09e7C41A9177d",
-    "Reputation": "0xEa06BD813571B7c4336478A039E0DF403aDE4C79"
+    "Registry": "0xc39B998279c4F911482BF95550c2c9053b1bE323",
+    "Job": "0x70b193d78703A252549093b3ee27e4B18825AE64",
+    "Reputation": "0xB32eB4C5e97102bA404c850904848Caee77be36F"
   },
-  "deployedAt": "2026-05-24T13:06:16.795Z"
+  "deployedAt": "2026-05-25T06:12:35.904Z"
 }
