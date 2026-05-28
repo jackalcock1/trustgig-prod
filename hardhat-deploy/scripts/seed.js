@@ -1,94 +1,119 @@
-// This script seeds the chain with our demo personas:
-//   - Alice (Freelancer)
-//   - Acme Corp (Client)
-//   - Four Skill Verifiers: AWS, GCP, QUT, UQ
+// seeds the chain with some test data so the teaching team (or anyone) can
+// poke around without having to register everything by hand.
 //
-// We use Hardhat's default signers (derived from Ganache's mnemonic) to
-// register Alice and Acme Corp because they self-register, so we need their
-// signing keys. For the verifiers, we don't need their private keys at all
-// because the contract owner (signer[0]) is the one calling approveVerifier
-// on each verifier's address - we just need the addresses themselves.
+// creates:
+//   - 3 freelancers (Sanjay, Nalin, Ferdinand)
+//   - 2 clients (EvilCorp, The Boring Company)
+//   - approves 4 verifiers (AWS, GCP, QUT, UQ)
 //
-// Run AFTER deploy.js. Usage:
-//   npx hardhat run scripts/seed.js --network ganache
+// the freelancers and clients self-register so we just use the ganache
+// accounts hardhat already knows about (signers 1-5). the verifiers get
+// approved by address - and those 4 addresses come in from environment
+// variables so whoever runs this can point them at their own ganache
+// accounts without editing this file.
+//
+// run AFTER deploy.js, like this:
+//   VERIFIER_AWS=0x... VERIFIER_GCP=0x... VERIFIER_QUT=0x... VERIFIER_UQ=0x... \
+//     npx hardhat run scripts/seed.js --network ganache
+//
+// (or just put those in a .env file and use the npm script we set up)
 
 const hre = require("hardhat");
 const fs = require("fs");
 const path = require("path");
 
-// ----- Hardcoded verifier addresses for the demo -----
-// these are the wallets we've already imported into MetaMask as the four
-// verifier organisations. they don't need to be in any particular order
-// in Ganache - we just approve them by address.
-const VERIFIER_ADDRESSES = {
-  AWS: "0x3C7D7059204b1382Ea6A5d60CD7FE555F1fB86DD",
-  GCP: "0xC404abcC46c521a2D2BCE785fB9dF222030Dfe90",
-  QUT: "0x5Df7640952eEf654dfAdE1dcfd860C50E71BB5c6",
-  UQ:  "0xD209642b8215ce3c8570EF65BB3fD4c25532913b",
-};
-
 async function main() {
-  // Load the deployment info to find the Registry address
+  // grab the verifier addresses from env vars. if any are missing we bail
+  // out early rather than approving a load of undefined addresses
+  const verifierAddresses = {
+    AWS: process.env.VERIFIER_AWS,
+    GCP: process.env.VERIFIER_GCP,
+    QUT: process.env.VERIFIER_QUT,
+    UQ: process.env.VERIFIER_UQ,
+  };
+
+  for (const name of Object.keys(verifierAddresses)) {
+    if (!verifierAddresses[name]) {
+      console.error("ERROR: missing the " + name + " verifier address.");
+      console.error("you need to set VERIFIER_AWS, VERIFIER_GCP, VERIFIER_QUT and VERIFIER_UQ.");
+      console.error("easiest way is to fill them into your .env file - see .env.example");
+      process.exit(1);
+    }
+  }
+
+  // load the deployment info to find where Registry got deployed
   const deploymentPath = path.join(__dirname, "..", "deployments", "ganache.json");
   const deploymentInfo = JSON.parse(fs.readFileSync(deploymentPath, "utf-8"));
   const registryAddress = deploymentInfo.addresses.Registry;
 
-  // Grab signers - we only need the first three for Alice/Acme/Owner.
-  // The verifiers don't need to be in signers[] because we approve them
-  // by address rather than calling from them.
+  // get the accounts ganache handed us. signer 0 is the owner/deployer,
+  // 1-3 are our freelancers, 4-5 are our clients.
   const signers = await hre.ethers.getSigners();
   const ownerSigner = signers[0];
-  const aliceSigner = signers[1];
-  const acmeCorpSigner = signers[2];
 
-  console.log("Seeding demo personas to Registry at:", registryAddress);
+  const freelancerSigners = [signers[1], signers[2], signers[3]];
+  const clientSigners = [signers[4], signers[5]];
+
+  // the actual data we want to seed
+  const freelancers = [
+    { signer: freelancerSigners[0], name: "Sanjay", skills: ["Solidity", "React"] },
+    { signer: freelancerSigners[1], name: "Nalin", skills: ["Python", "Data Analytics"] },
+    { signer: freelancerSigners[2], name: "Ferdinand", skills: ["UI Design", "Figma"] },
+  ];
+
+  const clients = [
+    { signer: clientSigners[0], name: "EvilCorp" },
+    { signer: clientSigners[1], name: "The Boring Company" },
+  ];
+
+  console.log("Seeding test data to Registry at:", registryAddress);
   console.log("");
 
   const Registry = await hre.ethers.getContractFactory("Registry");
   const registry = Registry.attach(registryAddress);
 
-  // ----- Alice: Freelancer -----
-  console.log("Registering Alice as a Freelancer...");
-  const registryAsAlice = registry.connect(aliceSigner);
-  const aliceTx = await registryAsAlice.registerFreelancer(
-    "Alice",
-    ["Solidity", "React"]
-  );
-  await aliceTx.wait();
-  console.log("  Alice registered at:", aliceSigner.address);
-
-  // ----- Acme Corp: Client -----
-  console.log("Registering Acme Corp as a Client...");
-  const registryAsAcme = registry.connect(acmeCorpSigner);
-  const acmeTx = await registryAsAcme.registerClient("Acme Corp");
-  await acmeTx.wait();
-  console.log("  Acme Corp registered at:", acmeCorpSigner.address);
-
-  // ----- Approve all four verifiers -----
-  // We loop through the verifier addresses and call approveVerifier on each.
-  // The owner does this so the same registry instance works (it's already
-  // connected to signer[0] by default).
-  console.log("Approving the four Skill Verifiers...");
-  const registryAsOwner = registry.connect(ownerSigner);
-
-  for (const verifierName of Object.keys(VERIFIER_ADDRESSES)) {
-    const verifierAddress = VERIFIER_ADDRESSES[verifierName];
-    const tx = await registryAsOwner.approveVerifier(verifierAddress, verifierName);
+  // ----- register the freelancers -----
+  console.log("Registering freelancers...");
+  for (const f of freelancers) {
+    const registryAsFreelancer = registry.connect(f.signer);
+    const tx = await registryAsFreelancer.registerFreelancer(f.name, f.skills);
     await tx.wait();
-    console.log(`  ${verifierName} approved at:`, verifierAddress);
+    console.log("  " + f.name + " registered at:", f.signer.address);
+  }
+
+  // ----- register the clients -----
+  console.log("Registering clients...");
+  for (const c of clients) {
+    const registryAsClient = registry.connect(c.signer);
+    const tx = await registryAsClient.registerClient(c.name);
+    await tx.wait();
+    console.log("  " + c.name + " registered at:", c.signer.address);
+  }
+
+  // ----- approve the verifiers (owner does this) -----
+  console.log("Approving verifiers...");
+  const registryAsOwner = registry.connect(ownerSigner);
+  for (const name of Object.keys(verifierAddresses)) {
+    const addr = verifierAddresses[name];
+    const tx = await registryAsOwner.approveVerifier(addr, name);
+    await tx.wait();
+    console.log("  " + name + " approved at:", addr);
   }
 
   console.log("");
-  console.log("Seed complete. Demo personas ready.");
+  console.log("Seed complete!");
   console.log("");
-  console.log("Account addresses for MetaMask:");
-  console.log("  Owner:        ", ownerSigner.address);
-  console.log("  Alice:        ", aliceSigner.address);
-  console.log("  Acme Corp:    ", acmeCorpSigner.address);
-  console.log("  AWS verifier: ", VERIFIER_ADDRESSES.AWS);
-  console.log("  GCP verifier: ", VERIFIER_ADDRESSES.GCP);
-  console.log("  QUT verifier: ", VERIFIER_ADDRESSES.QUT);
-  console.log("  UQ verifier:  ", VERIFIER_ADDRESSES.UQ);
+  console.log("Quick reference - who's who:");
+  console.log("  Owner:      ", ownerSigner.address);
+  for (const f of freelancers) {
+    console.log("  " + f.name + " (freelancer):", f.signer.address);
+  }
+  for (const c of clients) {
+    console.log("  " + c.name + " (client):", c.signer.address);
+  }
+  for (const name of Object.keys(verifierAddresses)) {
+    console.log("  " + name + " (verifier):", verifierAddresses[name]);
+  }
 }
 
 main().catch((error) => {
