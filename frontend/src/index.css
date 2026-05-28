@@ -1,1 +1,8 @@
-/* TrustGig global styles - app-specific styles are in App.css */
+/* Global resets for TrustGig - the actual styling lives in App.css */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}

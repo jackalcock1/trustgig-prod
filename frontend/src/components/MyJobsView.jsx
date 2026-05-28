@@ -9,6 +9,7 @@
 //   - Client + Confirmed -> can submit review (if they haven't already)
 
 import { useState, useEffect } from "react";
+import confetti from "canvas-confetti";
 import {
   getContracts,
   getStatusLabel,
@@ -131,25 +132,58 @@ function MyJobsView(props) {
     fetchMyJobs();
   }, [props.signer, props.account, props.refreshCounter]);
 
-  async function handleCompleteJob(jobId) {
-    setActionError(null);
-    setActionJobId(jobId);
+async function handleCompleteJob(jobId) {
+  setActionError(null);
+  setActionJobId(jobId);
 
-    try {
-      const contracts = getContracts(props.signer);
-      const transaction = await contracts.job.completeJob(jobId);
-      await transaction.wait();
+  try {
+    const contracts = getContracts(props.signer);
+    const transaction = await contracts.job.completeJob(jobId);
+    await transaction.wait();
 
-      if (props.onActionComplete) {
-        props.onActionComplete();
-      }
-    } catch (err) {
-      console.error("Failed to mark job complete:", err);
-      setActionError(err.reason || err.message || "Failed to mark complete.");
-    } finally {
-      setActionJobId(null);
+    // little celebration moment when the freelancer marks a job complete -
+    // they've done the work, they should get a tiny win on screen for it.
+    // we fire two bursts from the bottom corners so it sweeps across the
+    // screen rather than dumping in one spot.
+    fireConfettiCelebration();
+
+    if (props.onActionComplete) {
+      props.onActionComplete();
     }
+  } catch (err) {
+    console.error("Failed to mark job complete:", err);
+    setActionError(err.reason || err.message || "Failed to mark complete.");
+  } finally {
+    setActionJobId(null);
   }
+}
+
+// helper that fires off the confetti animation. we keep this outside the
+// main handler just to keep that function readable.
+function fireConfettiCelebration() {
+  // brand colours - same blue/orange/yellow as the rest of the app
+  const brandColours = ["#093BFF", "#FF6A00", "#FFD400"];
+
+  // burst from the bottom-left
+  confetti({
+    particleCount: 80,
+    angle: 60,
+    spread: 70,
+    startVelocity: 55,
+    origin: { x: 0, y: 0.9 },
+    colors: brandColours,
+  });
+
+  // and from the bottom-right
+  confetti({
+    particleCount: 80,
+    angle: 120,
+    spread: 70,
+    startVelocity: 55,
+    origin: { x: 1, y: 0.9 },
+    colors: brandColours,
+  });
+}
 
   async function handleConfirmCompletion(jobId) {
     setActionError(null);

@@ -18,6 +18,7 @@ import BrowseJobsView from "./components/BrowseJobsView";
 import MyJobsView from "./components/MyJobsView";
 import EndorseSkillPanel from "./components/EndorseSkillPanel";
 import ReputationLookup from "./components/ReputationLookup";
+import logoUrl from "./assets/logo.svg";
 
 import "./App.css";
 
@@ -159,7 +160,7 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>TrustGig</h1>
+        <img src={logoUrl} alt="TrustGig" className="app-logo" />
         <p className="tagline">Portable freelancer reputation on the blockchain</p>
 
         <div className="wallet-section">

@@ -9,6 +9,7 @@
 //   - The list of skill endorsements
 
 import { useState } from "react";
+import VerifiedSkillCard from "./VerifiedSkillCard";
 import { getContracts } from "../contracts";
 
 function ReputationLookup(props) {
@@ -242,25 +243,19 @@ function ReputationLookup(props) {
           </div>
 
           <div className="profile-section">
-            <h4>Client Reviews</h4>
-            {profile.reviews.length === 0 ? (
-              <p>No reviews yet.</p>
+            <h4>Verified Endorsements</h4>
+            {profile.endorsements.length === 0 ? (
+              <p>No verified endorsements yet.</p>
             ) : (
-              <div className="reviews-list">
-                {profile.reviews.map(function (review, index) {
+              <div className="verified-skills-grid">
+                {profile.endorsements.map(function (endorsement, index) {
                   return (
-                    <div key={index} className="review-card">
-                      <div className="review-header">
-                        <span className="review-rating">
-                          {renderStars(review.rating)}
-                        </span>
-                        <span className="review-meta">
-                          Job #{review.jobId} • {formatAddress(review.client)} •{" "}
-                          {formatTimestamp(review.timestamp)}
-                        </span>
-                      </div>
-                      <p className="review-comment">"{review.comment}"</p>
-                    </div>
+                    <VerifiedSkillCard
+                      key={index}
+                      skill={endorsement.skill}
+                      verifierAddress={endorsement.verifier}
+                      timestamp={endorsement.timestamp}
+                    />
                   );
                 })}
               </div>

@@ -1,53 +1,94 @@
-/* Basic styles for TrustGig - keeping it simple, just enough to be presentable */
+/* TrustGig brand colours pulled directly from the logo so everything matches:
+   primary blue   #093BFF
+   accent orange  #FF6A00
+   accent yellow  #FFD400 */
+
+/* Pull in Panchang from Google Fonts. Different weights for different jobs:
+   400 (regular) for body, 500 (medium) for buttons, 700 (bold) for headings. */
+@import url("https://fonts.googleapis.com/css2?family=Panchang:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --tg-blue: #093BFF;
+  --tg-orange: #FF6A00;
+  --tg-yellow: #FFD400;
+  --tg-blue-dark: #0729bd;
+  --tg-orange-dark: #d65800;
+  --tg-text: #1a1a2e;
+  --tg-muted: #5a5a7a;
+  --tg-bg: #ffffff;
+  --tg-panel: #f8f9ff;
+  --tg-panel-border: #e0e4f5;
+  --tg-error-bg: #ffe9e0;
+  --tg-error-text: #c4310a;
+  --tg-success-bg: #fff8d1;
+  --tg-success-text: #6b5400;
+}
+
+body {
+  margin: 0;
+  background: var(--tg-bg);
+  font-family: "Panchang", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
+  color: var(--tg-text);
+  line-height: 1.5;
+}
 
 .app-container {
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  color: #222;
 }
 
+/* ---- Header ---- */
+
 .app-header {
-  border-bottom: 2px solid #eee;
+  border-bottom: 3px solid var(--tg-yellow);
   padding-bottom: 20px;
   margin-bottom: 30px;
 }
 
-.app-header h1 {
-  margin: 0 0 5px 0;
-  color: #1a4d80;
+.app-logo {
+  display: block;
+  height: 70px;
+  width: auto;
+  margin: 0 0 10px 0;
 }
 
 .tagline {
-  color: #666;
+  color: var(--tg-muted);
   margin: 0 0 20px 0;
-  font-style: italic;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0.2px;
 }
 
 .wallet-section {
-  background: #f7f9fc;
+  background: var(--tg-panel);
   padding: 15px;
-  border-radius: 6px;
-  border: 1px solid #e0e6ee;
+  border-radius: 8px;
+  border: 1px solid var(--tg-panel-border);
 }
 
 .connect-button {
-  background: #1a4d80;
+  background: var(--tg-orange);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: "Panchang", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.3px;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .connect-button:hover {
-  background: #143d66;
+  background: var(--tg-orange-dark);
 }
 
 .connect-button:disabled {
-  background: #999;
+  background: #aaa;
   cursor: not-allowed;
 }
 
@@ -57,34 +98,96 @@
   word-break: break-all;
 }
 
-.error-message {
-  color: #c00;
-  background: #fee;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #fcc;
-  margin-top: 10px;
+.wallet-info strong {
+  color: var(--tg-blue);
+  font-weight: 600;
 }
+
+/* ---- Generic messages ---- */
+
+.error-message {
+  color: var(--tg-error-text);
+  background: var(--tg-error-bg);
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-left: 4px solid var(--tg-orange);
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.success-message {
+  color: var(--tg-success-text);
+  background: var(--tg-success-bg);
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-left: 4px solid var(--tg-yellow);
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---- Panels ---- */
 
 .welcome-message,
 .wrong-network-warning,
 .panel {
   background: white;
-  padding: 20px;
-  border-radius: 6px;
-  border: 1px solid #e0e6ee;
+  padding: 25px;
+  border-radius: 8px;
+  border: 1px solid var(--tg-panel-border);
   margin-bottom: 20px;
 }
 
 .wrong-network-warning {
-  background: #fff8e1;
-  border-color: #ffe082;
+  background: #fffbe8;
+  border-color: var(--tg-yellow);
+  border-left: 5px solid var(--tg-yellow);
 }
 
+.welcome-message h2,
 .panel h2 {
   margin-top: 0;
-  color: #1a4d80;
+  color: var(--tg-blue);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.3px;
 }
+
+/* ---- Tab bar ---- */
+
+.tab-bar {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--tg-panel-border);
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-family: "Panchang", sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--tg-muted);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  letter-spacing: 0.2px;
+  transition: color 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--tg-blue);
+}
+
+.tab-active {
+  color: var(--tg-blue);
+  border-bottom-color: var(--tg-orange);
+  font-weight: 700;
+}
+
+/* ---- Forms ---- */
 
 .form-group {
   margin-bottom: 15px;
@@ -92,76 +195,73 @@
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
+  color: var(--tg-text);
+  letter-spacing: 0.2px;
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px;
+  border: 1.5px solid var(--tg-panel-border);
+  border-radius: 6px;
   font-size: 14px;
+  font-family: "Panchang", sans-serif;
   box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--tg-blue);
 }
 
 .submit-button {
-  background: #2a7a2a;
+  background: var(--tg-orange);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
+  padding: 12px 22px;
+  border-radius: 6px;
   font-size: 14px;
+  font-family: "Panchang", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.3px;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .submit-button:hover {
-  background: #1f5d1f;
+  background: var(--tg-orange-dark);
 }
 
 .submit-button:disabled {
-  background: #999;
+  background: #aaa;
   cursor: not-allowed;
 }
 
-.success-message {
-  color: #2a7a2a;
-  background: #efe;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #cfc;
-  margin-top: 10px;
-}
-
-.tab-bar {
-  display: flex;
-  gap: 5px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #e0e6ee;
-}
-
-.tab {
-  background: transparent;
+.cancel-button {
+  background: var(--tg-muted);
+  color: white;
   border: none;
-  padding: 10px 18px;
+  padding: 12px 22px;
+  border-radius: 6px;
   font-size: 14px;
+  font-family: "Panchang", sans-serif;
+  font-weight: 500;
   cursor: pointer;
-  color: #666;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
 }
 
-.tab:hover {
-  color: #1a4d80;
+.cancel-button:hover {
+  background: #3d3d5a;
 }
 
-.tab-active {
-  color: #1a4d80;
-  border-bottom-color: #1a4d80;
-  font-weight: 600;
-}
+/* ---- Job cards ---- */
 
 .jobs-list {
   display: flex;
@@ -170,10 +270,15 @@
 }
 
 .job-card {
-  background: #f7f9fc;
-  border: 1px solid #e0e6ee;
-  border-radius: 6px;
-  padding: 15px;
+  background: var(--tg-panel);
+  border: 1px solid var(--tg-panel-border);
+  border-radius: 8px;
+  padding: 18px;
+  transition: border-color 0.15s ease;
+}
+
+.job-card:hover {
+  border-color: var(--tg-blue);
 }
 
 .job-card-header {
@@ -185,21 +290,25 @@
 
 .job-card-header h3 {
   margin: 0;
-  color: #1a4d80;
+  color: var(--tg-blue);
+  font-weight: 700;
+  font-size: 18px;
 }
 
 .status-badge {
-  background: #e3f2fd;
-  color: #1565c0;
-  padding: 3px 10px;
-  border-radius: 12px;
+  background: var(--tg-yellow);
+  color: var(--tg-text);
+  padding: 4px 12px;
+  border-radius: 14px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
 .job-description {
   margin: 10px 0;
-  font-style: italic;
+  color: var(--tg-text);
 }
 
 .job-meta {
@@ -207,12 +316,37 @@
   flex-wrap: wrap;
   gap: 15px;
   font-size: 13px;
-  color: #555;
+  color: var(--tg-muted);
   margin: 10px 0 15px 0;
 }
 
+.job-meta strong {
+  color: var(--tg-text);
+  font-weight: 600;
+}
+
+/* ---- Create job panel (highlighted to stand out) ---- */
+
+.browse-jobs-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.create-job-panel {
+  background: linear-gradient(135deg, #eef2ff 0%, #fff4e6 100%);
+  border-color: var(--tg-blue);
+  border-left: 5px solid var(--tg-blue);
+}
+
+.create-job-panel h2 {
+  color: var(--tg-blue);
+}
+
+/* ---- Review modal ---- */
+
 .review-form-overlay {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(9, 59, 255, 0.25);
   position: fixed;
   top: 0;
   left: 0;
@@ -226,27 +360,18 @@
 
 .review-form {
   background: white;
-  padding: 25px;
-  border-radius: 8px;
+  padding: 28px;
+  border-radius: 10px;
   max-width: 500px;
   width: 90%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 50px rgba(9, 59, 255, 0.25);
+  border-top: 5px solid var(--tg-orange);
 }
 
 .review-form h3 {
   margin-top: 0;
-  color: #1a4d80;
-}
-
-.review-form textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 14px;
-  resize: vertical;
-  box-sizing: border-box;
+  color: var(--tg-blue);
+  font-weight: 700;
 }
 
 .form-buttons {
@@ -255,102 +380,75 @@
   margin-top: 15px;
 }
 
-.cancel-button {
-  background: #888;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.cancel-button:hover {
-  background: #666;
-}
-
-.cancel-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.browse-jobs-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.create-job-panel {
-  background: #f0f6ff;
-  border-color: #c5dbf5;
-}
-
-.create-job-panel textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 14px;
-  resize: vertical;
-  box-sizing: border-box;
-}
+/* ---- Reputation profile ---- */
 
 .profile-display {
   margin-top: 20px;
-  border-top: 2px solid #e0e6ee;
+  border-top: 3px solid var(--tg-yellow);
   padding-top: 20px;
 }
 
 .profile-header h3 {
   margin: 0;
-  color: #1a4d80;
-  font-size: 24px;
+  color: var(--tg-blue);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .profile-address {
   margin: 5px 0 20px 0;
-  font-family: monospace;
+  font-family: "SF Mono", monospace;
   font-size: 13px;
-  color: #666;
+  color: var(--tg-muted);
   word-break: break-all;
 }
 
 .profile-summary {
   display: flex;
   gap: 30px;
-  background: #f7f9fc;
-  padding: 20px;
-  border-radius: 6px;
-  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--tg-blue) 0%, #4c6dff 100%);
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  color: white;
 }
 
 .profile-stat {
   text-align: center;
+  flex: 1;
 }
 
 .stat-value {
-  font-size: 28px;
-  font-weight: bold;
-  color: #1a4d80;
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--tg-yellow);
+  letter-spacing: -1px;
 }
 
 .stat-label {
-  font-size: 13px;
-  color: #666;
+  font-size: 12px;
+  color: white;
   margin-top: 5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .profile-section {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .profile-section h4 {
-  margin: 0 0 10px 0;
-  color: #444;
-  font-size: 15px;
+  margin: 0 0 12px 0;
+  color: var(--tg-text);
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  border-bottom: 2px solid var(--tg-yellow);
+  padding-bottom: 6px;
+  display: inline-block;
 }
 
 .skill-tags {
@@ -360,11 +458,12 @@
 }
 
 .skill-tag {
-  background: #e3f2fd;
-  color: #1565c0;
-  padding: 4px 12px;
-  border-radius: 14px;
+  background: var(--tg-blue);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 16px;
   font-size: 13px;
+  font-weight: 500;
 }
 
 .endorsements-list {
@@ -377,6 +476,11 @@
   font-size: 14px;
 }
 
+.endorsements-list strong {
+  color: var(--tg-orange);
+  font-weight: 600;
+}
+
 .reviews-list {
   display: flex;
   flex-direction: column;
@@ -384,10 +488,11 @@
 }
 
 .review-card {
-  background: #fafbfc;
-  border: 1px solid #e0e6ee;
+  background: var(--tg-panel);
+  border: 1px solid var(--tg-panel-border);
+  border-left: 4px solid var(--tg-orange);
   border-radius: 6px;
-  padding: 12px;
+  padding: 14px;
 }
 
 .review-header {
@@ -400,17 +505,114 @@
 }
 
 .review-rating {
-  color: #f5a623;
-  font-size: 16px;
+  color: var(--tg-orange);
+  font-size: 18px;
+  letter-spacing: 1px;
 }
 
 .review-meta {
   font-size: 12px;
-  color: #888;
+  color: var(--tg-muted);
 }
 
 .review-comment {
   margin: 0;
+  color: var(--tg-text);
   font-style: italic;
-  color: #444;
+}
+
+/* ---- Verified skill cards ---- */
+
+.verified-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.verified-skill-card {
+  background: white;
+  border: 1px solid var(--tg-panel-border);
+  border-top: 4px solid var(--tg-blue);
+  border-radius: 8px;
+  padding: 16px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.verified-skill-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(9, 59, 255, 0.1);
+}
+
+.verified-skill-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.verified-skill-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.verified-skill-logo-fallback {
+  width: 50px;
+  height: 50px;
+  background: var(--tg-panel);
+  border: 1px dashed var(--tg-panel-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--tg-muted);
+  flex-shrink: 0;
+}
+
+.verified-skill-card-headings {
+  flex: 1;
+  min-width: 0;
+}
+
+.verified-skill-name {
+  margin: 0 0 2px 0;
+  color: var(--tg-text);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+}
+
+.verified-skill-verifier-short {
+  margin: 0;
+  color: var(--tg-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.verified-skill-description {
+  margin: 0 0 6px 0;
+  color: var(--tg-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.verified-skill-blurb {
+  margin: 0 0 12px 0;
+  color: var(--tg-muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.verified-skill-meta {
+  margin: 0;
+  color: var(--tg-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
 }

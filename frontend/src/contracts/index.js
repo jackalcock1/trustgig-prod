@@ -35,6 +35,12 @@ import ReputationArtifact from "./Reputation.json";
 // we just do it by hand for now.
 import deploymentInfo from "./deployment.json";
 
+// also import the verifier logos so they get bundled by Vite
+import awsLogo from "../assets/verifiers/aws.png";
+import gcpLogo from "../assets/verifiers/gcp.png";
+import qutLogo from "../assets/verifiers/qut.png";
+import uqLogo from "../assets/verifiers/uq.png";
+
 // pull out the addresses so other files can import them by name. probably
 // overkill having this as a separate export but makes the contract code
 // a bit more readable in places where we need just the address.
@@ -59,10 +65,6 @@ export const CHAIN_ID = deploymentInfo.chainId;
 // actually talk to the contracts.
 // ---------------------------------------------------------------------
 export function getContracts(signerOrProvider) {
-  // for each contract, we make an ethers.Contract instance using:
-  //   - the deployed address (from deployment.json)
-  //   - the ABI (from the artifact json)
-  //   - the signer or provider (so it knows how to send/read transactions)
   const registry = new ethers.Contract(
     CONTRACT_ADDRESSES.Registry,
     RegistryArtifact.abi,
@@ -81,8 +83,6 @@ export function getContracts(signerOrProvider) {
     signerOrProvider
   );
 
-  // return them as a single object so callers can grab whichever ones
-  // they need with destructuring, e.g. const { job } = getContracts(signer);
   return {
     registry: registry,
     job: job,
@@ -112,15 +112,8 @@ export const ROLE_FREELANCER = 1;
 export const ROLE_CLIENT = 2;
 export const ROLE_VERIFIER = 3;
 
-// ---------------------------------------------------------------------
-// getRoleLabel
-// ---------------------------------------------------------------------
 // turns a role number into a human-readable label for the UI. used in
 // the header where we say "Role: Freelancer" etc.
-//
-// we use if/else if instead of a switch because it reads a bit more
-// like English. doesn't matter much performance-wise.
-// ---------------------------------------------------------------------
 export function getRoleLabel(roleNumber) {
   if (roleNumber === ROLE_FREELANCER) {
     return "Freelancer";
@@ -129,9 +122,6 @@ export function getRoleLabel(roleNumber) {
   } else if (roleNumber === ROLE_VERIFIER) {
     return "Verifier";
   } else {
-    // covers ROLE_NONE (which means not registered yet) and any garbage
-    // values that might come back unexpectedly - safer to treat them all
-    // as "not registered" than to display something weird
     return "Not registered";
   }
 }
@@ -141,21 +131,12 @@ export function getRoleLabel(roleNumber) {
 // ---------------------------------------------------------------------
 // same idea as the role constants but for the Job contract's Status enum:
 //   enum Status { None, Open, Accepted, Completed, Confirmed }
-//
-// used everywhere we need to render or check what state a job is in.
-// ---------------------------------------------------------------------
 export const STATUS_NONE = 0;
 export const STATUS_OPEN = 1;
 export const STATUS_ACCEPTED = 2;
 export const STATUS_COMPLETED = 3;
 export const STATUS_CONFIRMED = 4;
 
-// ---------------------------------------------------------------------
-// getStatusLabel
-// ---------------------------------------------------------------------
-// turns a status number into a readable label, like "Open" or "Confirmed".
-// shown on the job cards in the UI.
-// ---------------------------------------------------------------------
 export function getStatusLabel(statusNumber) {
   if (statusNumber === STATUS_OPEN) {
     return "Open";
@@ -166,8 +147,66 @@ export function getStatusLabel(statusNumber) {
   } else if (statusNumber === STATUS_CONFIRMED) {
     return "Confirmed";
   } else {
-    // shouldn't really happen but if it does we'd rather show "Unknown"
-    // than nothing at all
     return "Unknown";
   }
+}
+
+// ---------------------------------------------------------------------
+// Verifier display info
+// ---------------------------------------------------------------------
+// the Registry contract stores each approved verifier's name on-chain, but
+// for the UI we want to show a bit more - their full name, a tagline, a
+// brand colour, and ideally their logo. that stuff doesn't really belong
+// on-chain (would be expensive and pointless to store logos as bytes), so
+// we keep a lookup table here in the frontend that maps a verifier's
+// wallet address to their display info.
+//
+// any address that isn't in this table just falls back to showing the
+// on-chain name and the address itself - so it degrades gracefully if a
+// new verifier gets approved that we haven't added to this table yet.
+// addresses are stored lowercase so we can compare them safely (ethereum
+// addresses are case-insensitive but the casing varies depending on where
+// you get them from).
+
+const VERIFIER_INFO = {
+  "0x3c7d7059204b1382ea6a5d60cd7fe555f1fb86dd": {
+    shortName: "AWS",
+    fullName: "Amazon Web Services",
+    description: "Industry-standard cloud computing certifications recognised worldwide.",
+    brandColour: "#FF9900",
+    logo: awsLogo,
+  },
+  "0xc404abcc46c521a2d2bce785fb9df222030dfe90": {
+    shortName: "GCP",
+    fullName: "Google Cloud Platform",
+    description: "Industry-recognised credentials that validate your expertise in managing solutions on Google Cloud.",
+    brandColour: "#EA4335",
+    logo: gcpLogo,
+  },
+  "0x5df7640952eef654dfade1dcfd860c50e71bb5c6": {
+    shortName: "QUT",
+    fullName: "Queensland University of Technology",
+    description: "Undergraduate, postgraduate, research and Executive Education awards from a top-ranked Queensland university.",
+    brandColour: "#003562",
+    logo: qutLogo,
+  },
+  "0xd209642b8215ce3c8570ef65bb3fd4c25532913b": {
+    shortName: "UQ",
+    fullName: "University of Queensland",
+    description: "Globally top-ranked, research-intensive degree-awarding institution that equips students with best-in-class skills.",
+    brandColour: "#51247A",
+    logo: uqLogo,
+  },
+};
+
+// lookup helper - returns the display info for an address, or null if we
+// don't have any for that one. lowercasing the address makes the comparison
+// safer since ethereum addresses are case-insensitive but the original case
+// can come back from various places.
+export function getVerifierInfo(address) {
+  if (!address) {
+    return null;
+  }
+  const lookupKey = address.toLowerCase();
+  return VERIFIER_INFO[lookupKey] || null;
 }
